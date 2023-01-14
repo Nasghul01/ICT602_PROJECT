@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.about.AboutFragment">
+
+    <ImageView
+
+        android:id="@+id/imageView2"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="30dp"
+        app:srcCompat="@drawable/hazardgroup"
+        android:layout_centerHorizontal="true"
+        />
+
+    <LinearLayout
+        android:layout_below="@id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="NASRUL ARSYAD BIN HAMIDI\n 2020615369" />
+
+        <TextView
+            android:layout_below="@+id/textView3"
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="NOOR ADRIANA BINTI EZZALDIN\n 2020866464"/>
+
+        <TextView
+            android:layout_below="@+id/textView4"
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="NUR AZMINA BINTI MUZLI\n 2020819466"/>
+
+        <TextView
+            android:layout_below="@+id/textView5"
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="MUHAMMAD IRFAN NAZMI BIN MOHD NAZRI\n 2020489854"/>
+
+        <TextView
+            android:layout_below="@+id/textView6"
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Find us on GitHub"/>
+
+        <TextView
+            android:layout_below="@+id/textView7"
+            android:id="@+id/textViewLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/hyperlink1"
+            android:textColor="@color/design_default_color_on_primary"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</RelativeLayout>
