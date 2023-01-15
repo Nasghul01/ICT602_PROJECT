@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">ICT602_PROJECT</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">News</string>
+    <string name="title_dashboard">Map</string>
+    <string name="title_notifications">About Us</string>
 
     <string name="hyperlink1"><a href="https://github.com/Nasghul01/ICT602_PROJECT_CROWDSOURCING">WWW.GITHUB.COM</a></string>
 </resources>
