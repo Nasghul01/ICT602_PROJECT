@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.ict602_project.R;
+import com.example.ict602_project.databinding.FragmentMapBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,6 +20,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapFragment extends Fragment {
+
+    private MapViewModel mapViewModel;
+    private FragmentMapBinding binding;
+
+    //initialize variable
+    SupportMapFragment supportMapFragment;
+    FusedLocationProviderClient client;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
