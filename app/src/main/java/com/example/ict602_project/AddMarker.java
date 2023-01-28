@@ -49,11 +49,12 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
     EditText name, type, desc;
 
     RequestQueue queue;
-    final String URL = "http://www.ict602.ml/insertReport.php";
+    final String URL = "https://bright-commas.000webhostapp.com/insert_marker.php";
 
     RadioGroup radGrp;
-    RadioButton radBtn1, radBtn2, radBtn3, radBtn4;
-    String checkedHazard = "1";
+    RadioButton radBtn1, radBtn2, radBtn3, radBtn4,radBtn5,radBtn6;
+    EditText editText;
+    String checkedHazardName = "";
 
     MapView mMapView;
     Location userLocation;
@@ -80,22 +81,31 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
         radBtn2 = (RadioButton) findViewById(R.id.radID2);
         radBtn3 = (RadioButton) findViewById(R.id.radID3);
         radBtn4 = (RadioButton) findViewById(R.id.radID4);
+        radBtn5 = (RadioButton) findViewById(R.id.radID5);
+        radBtn6 = (RadioButton) findViewById(R.id.radID6);
+        editText = (EditText) findViewById(R.id.reporterName);
 
         radGrp.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId){
                     case R.id.radID1:
-                        checkedHazard = "1";
+                        checkedHazardName = "Car Accident";
                         break;
                     case R.id.radID2:
-                        checkedHazard = "2";
+                        checkedHazardName = "Car Breakdown";
                         break;
                     case R.id.radID3:
-                        checkedHazard = "3";
+                        checkedHazardName = "Police";
                         break;
                     case R.id.radID4:
-                        checkedHazard = "4";
+                        checkedHazardName = "Landslide";
+                        break;
+                    case R.id.radID5:
+                        checkedHazardName = "Flood";
+                        break;
+                    case R.id.radID6:
+                        checkedHazardName = "Under Construction";
                         break;
                 }
             }
@@ -110,10 +120,11 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
         //if so, set all the edittext's and textview's based on values retrieved
         Location currentLocation = extras.getParcelable("currentLocation");
         userLocation = currentLocation;
+
         globalUseLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        String userID = extras.getString("userID");
-        //remark: nanti pass user type sekali
-        String userType = extras.getString("userType");
+//        String userID = extras.getString("userID");
+//        //remark: nanti pass user type sekali
+//        String userType = extras.getString("userType");
         //String userType = "2";
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
@@ -130,16 +141,16 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
 
                 Date currentTime = Calendar.getInstance().getTime();
 
+                String reportedBy = String.valueOf(editText);
+
                 Time dummyTime = new Time(currentTime.getTime());
 
                 // Marker newMarker = new Marker(currentLocation, hazardName, hazardType, hazardDesc, userID, dummyTime);
 
                 //hold jap, buat read dulu
-                makeRequest(currentLocation, checkedHazard, userID, currentDateandTime);
+                makeRequest(checkedHazardName,currentDateandTime,currentLocation,reportedBy);
 
                 Intent i = new Intent(AddMarker.this, MainActivity.class);
-                i.putExtra("userID", userID);
-                i.putExtra("userType", userType);
                 startActivity(i);
                 finish();
             }
@@ -147,7 +158,7 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     //basically POST method
-    public void makeRequest(Location currentLocation, String hazardID, String userID, String currentTime){
+    public void makeRequest(String checkedHazardName, String currentDateandTime,Location currentLocation, String reportedBy ){
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -158,11 +169,11 @@ public class AddMarker extends AppCompatActivity implements OnMapReadyCallback {
             protected Map<String, String> getParams (){
                 //POST key and values
                 Map<String, String> params = new HashMap<>();
+                params.put("hazardname", checkedHazardName);
+                params.put("time", String.valueOf(currentDateandTime));
                 params.put("lat", String.valueOf(globalUseLocation.latitude));
-                params.put("lon", String.valueOf(globalUseLocation.longitude));
-                params.put("hazardID", hazardID);
-                params.put("userID", userID);
-                params.put("dateTime", currentTime);
+                params.put("lng", String.valueOf(globalUseLocation.longitude));
+                params.put("reportedBy",reportedBy);
                 return params;
             }
         };

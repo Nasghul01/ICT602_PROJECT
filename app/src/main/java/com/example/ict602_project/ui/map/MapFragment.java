@@ -138,6 +138,17 @@ public class MapFragment extends Fragment {
 
     //getcurrentlocation
     private void getCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
 //Initialize task location
         Task<Location> task = client.getLastLocation();
@@ -197,7 +208,7 @@ public class MapFragment extends Fragment {
         @Override
         public void onResponse(String response) {
 
-            Log.d("HazardMarker","Number of Hazard_Marker Data Point: " + hazard_markers.length );
+            Log.d("HazardMarker","Number of Hazard_Marker Data Point: ");
 
             hazard_markers = gson.fromJson(response, HazardMarker[].class);
 
@@ -223,9 +234,9 @@ public class MapFragment extends Fragment {
                 //.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_hazardicon));
 
                 if(marker.getTitle().equals("Car Accident")){
-                    bitmapDrawable = (BitmapDrawable)getResources().getDrawable(R.drawable.accident);
+                    bitmapDrawable = (BitmapDrawable)getResources().getDrawable(R.drawable.marker_accident);
                 }else if(marker.getTitle().equals("Car Breakdown")){
-                    bitmapDrawable = (BitmapDrawable)getResources().getDrawable(R.drawable.car_breakdown);
+                    bitmapDrawable = (BitmapDrawable)getResources().getDrawable(R.drawable.marker_car_breakdown);
                 }else if(marker.getTitle().equals("Police")){
                     bitmapDrawable = (BitmapDrawable)getResources().getDrawable(R.drawable.police);
                 }else if (marker.getTitle().equals("Landslide")){

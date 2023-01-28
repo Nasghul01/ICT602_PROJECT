@@ -10,8 +10,8 @@
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:layout_marginBottom="13dp"
+        android:layout_marginTop="46dp"
+        android:layout_marginBottom="21dp"
         android:gravity="center"
         android:text="Hazard Type"
         app:flow_horizontalAlign="center"
@@ -26,8 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="41dp"
         android:layout_marginEnd="41dp"
-        android:layout_marginBottom="36dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        android:layout_marginBottom="34dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
@@ -38,28 +38,66 @@
             android:layout_height="wrap_content"
             android:checked="true"
 
-            android:text="Road Obstruction" />
+            android:text="Car Accident" />
 
         <RadioButton
             android:id="@+id/radID2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Slippery Road" />
+            android:text="Car Breakdown" />
 
         <RadioButton
             android:id="@+id/radID3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Dangerous Pothole" />
+            android:text="Police" />
 
         <RadioButton
             android:id="@+id/radID4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
-            android:text="Traffic Accident" />
+            android:text="Landslide" />
 
+        <RadioButton
+            android:id="@+id/radID5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Flood" />
+
+        <RadioButton
+            android:id="@+id/radID6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Under Construction" />
     </RadioGroup>
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="7dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:text="Reporter Name"
+        app:layout_constraintBottom_toTopOf="@+id/mapView"
+        app:layout_constraintEnd_toStartOf="@+id/reporterName"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grpRadio" />
+
+    <EditText
+        android:id="@+id/reporterName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBaseline_toBaselineOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView2" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
@@ -71,30 +109,19 @@
         app:layout_constraintBottom_toTopOf="@+id/btnSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="66dp"
+        android:layout_marginBottom="65dp"
         android:text="SUBMIT"
         app:flow_horizontalAlign="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mapView" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="19dp"
-        android:layout_marginBottom="36dp"
-        android:text="Please tap on the hazard's location on the map"
-        app:layout_constraintBottom_toTopOf="@+id/mapView"
-        app:layout_constraintEnd_toEndOf="@+id/grpRadio"
-        app:layout_constraintTop_toBottomOf="@+id/grpRadio" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
