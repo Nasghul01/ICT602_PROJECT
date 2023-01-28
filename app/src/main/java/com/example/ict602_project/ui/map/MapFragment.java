@@ -1,20 +1,15 @@
 package com.example.ict602_project.ui.map;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,14 +18,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -39,7 +31,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.ict602_project.AddMarker;
 import com.example.ict602_project.R;
-import com.example.ict602_project.Marker;
 import com.example.ict602_project.databinding.FragmentMapBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -57,8 +48,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.example.ict602_project.HazardMarker;
 
-import java.util.HashMap;
 import java.util.Vector;
 
 public class MapFragment extends Fragment {
@@ -66,33 +57,20 @@ public class MapFragment extends Fragment {
     private MapViewModel mapViewModel;
     private FragmentMapBinding binding;
 
-    TextView Ptitle, Pusername, Pdatetime; Button PbtnClose;
-
     //initialize variable
     SupportMapFragment supportMapFragment;
     FusedLocationProviderClient client;
-
-    FloatingActionButton btnTest;
-
     Location currentLocation;
 
     RequestQueue queue;
-    final String URL = "https://bright-commas.000webhostapp.com/all.php";
+    final String URL = "https://bright-commas.000webhostapp.com/hazard_marker.php";
     Gson gson;
-    Marker[] markerList;
+    HazardMarker[] hazard_markers;
     MarkerOptions marker;
     Vector<MarkerOptions> markerOptions;
     private GoogleMap mMap;
-    private GoogleMap cMap;
 
-    SQLiteDatabase localDB;
-//    LocalDB dataHelper;
-
-    HashMap<LatLng, String> map = new HashMap<LatLng, String>();
-
-    String currentUserGlobal, userNameGlobal, userTypeGlobal;
-
-    FloatingActionButton btnOpen, btnAdd, btnLogOut, btnRefresh;
+    FloatingActionButton btnAdd, btnRefresh;
 
     boolean doubleBackToExitPressedOnce = false;
 
@@ -103,17 +81,9 @@ public class MapFragment extends Fragment {
 
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        /*final TextView textView = binding.textHome;
-        mapViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });*/
+        gson = new GsonBuilder().create();
 
         btnAdd = (FloatingActionButton) binding.btnAdd;
-        btnLogOut = (FloatingActionButton) binding.btnLogOut;
         btnRefresh = (FloatingActionButton) binding.btnRefresh;
 
         btnRefresh.setOnClickListener(new View.OnClickListener() {
@@ -127,14 +97,11 @@ public class MapFragment extends Fragment {
         });
 
 
-//        dataHelper = new LocalDB(getContext());
-        gson = new GsonBuilder().create();
-
-        //dataHelper = new LocalDB(this); //possible duplicate
-
         //start of map
-        supportMapFragment = (SupportMapFragment) getChildFragmentManager()//getActivity().getSupportFragmentManager()
+        supportMapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.map);
+
+        markerOptions = new Vector<>();
 
         client = LocationServices.getFusedLocationProviderClient(getContext());
 
@@ -150,21 +117,7 @@ public class MapFragment extends Fragment {
         }
         //end of map
 
-        //data passing
-        Bundle extras = getActivity().getIntent().getExtras();
-
-        //if so, set all the edittext's and textview's based on values retrieved
-        //Location currentLocation = extras.getParcelable("currentLocation");
-        //if log in succressful, pass user id through intent ni
-        //for now, dummy
-        String userID = extras.getString("userID");
-        currentUserGlobal = userID;
-        //userNameGlobal = extras.getString("username");
-        userTypeGlobal = extras.getString("userType");
-
-        //String finalUserID = userID;
-
-        //Addmarker
+        //Addmarker button
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,7 +125,6 @@ public class MapFragment extends Fragment {
 
                 //pass the current location to the add marker class through intent
                 i.putExtra("currentLocation", currentLocation);
-                i.putExtra("userID", userID);
                 if(currentLocation != null)
                     startActivity(i);
                 else
@@ -181,89 +133,34 @@ public class MapFragment extends Fragment {
             }
         });
 
-        //Logout
-//        btnLogOut.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //actions bila user log out
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                builder.setCancelable(true);
-//                builder.setTitle("Log Out");
-//                builder.setMessage("Would you like to log out?");
-//                builder.setPositiveButton("Yes",
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                localDB = dataHelper.getWritableDatabase();
-//                                localDB.execSQL("delete from login;");
-//                                Intent firstpage = new Intent(getContext(), FirstPage.class);
-//                                getActivity().finish();
-//                                startActivity(firstpage);
-//                            }
-//                        });
-//                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        //do nothing
-//                    }
-//                });
-//
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//            }
-//        });
-
         return root;
     }
 
     //getcurrentlocation
     private void getCurrentLocation() {
-        //Initialize task location
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
+
+//Initialize task location
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(final Location location) {
-                //When success
+//When success
                 if (location != null) {
-                    //sync map
+//sync map
                     supportMapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
-
+//Initialize Lat Lng
                             mMap = googleMap;
-                            cMap = googleMap;
-                            //Initialize Lat Lng
                             LatLng latLng = new LatLng(location.getLatitude(),
                                     location.getLongitude());
-                            //Create marker options
+//Create marker options
                             MarkerOptions options = new MarkerOptions()
                                     .position(latLng)
-                                    .title("You are Here")
-                                    .snippet("Your location")
-                                    .icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_user_location));
-                            //zoom map scale 15
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
-                            String pass = null;
-                            map.put(new LatLng(location.getLatitude(), location.getLongitude()), pass);
-                            mMap.addMarker(options);
-                            //Toast.makeText(getContext(), "self marker: " + mMap.get(Marker.get), Toast.LENGTH_LONG).show();
-                            /*
-                            for(MarkerOptions mark: markerOptions){
-                                mMap.addMarker(mark);
-                            } */
-
+                                    .title("I am here");
+//zoom map scale 15
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            googleMap.addMarker(options);
                             currentLocation = location;
                             sendRequest();
                         }
@@ -300,26 +197,26 @@ public class MapFragment extends Fragment {
         @Override
         public void onResponse(String response) {
 
-            markerList = gson.fromJson(response, Marker[].class);
+            Log.d("HazardMarker","Number of Hazard_Marker Data Point: " + hazard_markers.length );
 
-            if(markerList.length < 1){
+            hazard_markers = gson.fromJson(response, HazardMarker[].class);
+
+            if(hazard_markers.length < 1){
                 Toast.makeText(getContext(), "No Hazards Recorded!", Toast.LENGTH_LONG).show();
                 return;
             }
 
             BitmapDrawable bitmapDrawable;
 
-            for(Marker info: markerList){
-                Double lat = Double.valueOf(info.getLatitude());
-                Double lng = Double.valueOf(info.getLongitude());
-                String title = info.getHazard();
-                String snippet = "Reported " + info.getTime() + " by " + info.getReportedBy();
-                String pass = info.getReportID() + "#" + info.getHazardID() + "#" + info.getUserID()
-                        + "#" + info.getReportedBy() + "#" + info.getTime();
+            for(HazardMarker info: hazard_markers){
+                Double lat = Double.parseDouble(info.getLat());
+                Double lng = Double.parseDouble(info.getLng());
+                String title = info.getHazardname();
+                String snippet = "Reported on " + info.getTime() + " by " + info.getReportedBy();
 
                 //Toast.makeText(getContext(), "Snippet: " + snippet, Toast.LENGTH_LONG).show();
 
-                MarkerOptions marker= new MarkerOptions()
+                marker = new MarkerOptions().title(title)
                         .position(new LatLng(lat,lng))
                         .title(title)
                         .snippet(snippet);
@@ -341,63 +238,11 @@ public class MapFragment extends Fragment {
                 Bitmap smallMarker = Bitmap.createScaledBitmap(bitmapDrawable.getBitmap(), 150, 150, false);
                 marker.icon(BitmapDescriptorFactory.fromBitmap(smallMarker));
 
-                map.put(new LatLng(lat, lng), pass);
                 mMap.addMarker(marker);
                 //Toast.makeText(getContext(), "marker: " + map.get(marker.getPosition()), Toast.LENGTH_LONG).show();
 
             } // end of for
-//             Boleh edit macam admin
-//            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//                @Override
-//                public boolean onMarkerClick(@NonNull com.google.android.gms.maps.model.Marker marker) {
 //
-//                    //only intent if the marker is from DB (doesn't intent with currentLocation markers)
-//                    if(!(map.get(marker.getPosition()) == null)){
-//
-//                        final boolean[] isEditable = {false};
-//                        Intent i = new Intent(getContext(), EditMarker.class);
-//                        String receivedString = map.get(marker.getPosition());
-//                        String[] outputToken = receivedString.split("#");
-//
-//                        String reportID = outputToken[0];
-//                        String hazardID = outputToken[1];
-//                        String userID = outputToken[2];
-//
-//                        //Toast.makeText(getContext(), "reportID: " + reportID +
-//                        //       " hazardID: " + hazardID + " userID: " + userID, Toast.LENGTH_LONG).show();
-//
-//                        //Toast.makeText(getContext(), "Your autho: " + userTypeGlobal, Toast.LENGTH_SHORT).show();
-//
-//                        if(currentUserGlobal.equals(userID)  || userTypeGlobal.equals("Admin") || userTypeGlobal.equals("1")){
-//                            isEditable[0] = true;
-//                            //Toast.makeText(getContext(), "Perh boleh edit sia", Toast.LENGTH_LONG).show();
-//                            i.putExtra("currentLocation", currentLocation);
-//                            i.putExtra("userID", currentUserGlobal);
-//                            i.putExtra("userType", userTypeGlobal);
-//                            i.putExtra("reportID",reportID);
-//                            i.putExtra("hazardID", hazardID);
-//                            i.putExtra("isEditable", isEditable[0]);
-//                            //finish();
-//                            startActivity(i);
-//                        }else{
-//                            String popupHazard = outputToken[1];
-//                            String popupUser = outputToken[3];
-//                            String popupTime = outputToken[4];
-//
-//                            showPopup(popupHazard, popupUser, popupTime);
-//                            return true;
-//                        }
-//
-//
-//                        //Toast.makeText(getContext(), "Clicked: on custom marker!", Toast.LENGTH_SHORT).show();
-//                        return false;
-//                    }else{
-//                        //Toast.makeText(getContext(), "This is you!", Toast.LENGTH_SHORT).show();
-//                        return true;
-//                    }
-//
-//                }
-//            });
 
         }//end of onresponse
 
@@ -468,22 +313,22 @@ public class MapFragment extends Fragment {
 //    }
 
     //@Override
-    public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            this.onBackPressed();
-            return;
-        }
-
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(getContext(), "Press again to exit", Toast.LENGTH_SHORT).show();
-
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
-    }
+//    public void onBackPressed() {
+//        if (doubleBackToExitPressedOnce) {
+//            this.onBackPressed();
+//            return;
+//        }
+//
+//        this.doubleBackToExitPressedOnce = true;
+//        Toast.makeText(getContext(), "Press again to exit", Toast.LENGTH_SHORT).show();
+//
+//        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                doubleBackToExitPressedOnce=false;
+//            }
+//        }, 2000);
+//    }
 
     @Override
     public void onDestroyView() {
